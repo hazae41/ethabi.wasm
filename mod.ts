@@ -1,3 +1,7 @@
+/**
+ * Deno/ES module
+ */
+
 export { Contract, ContractFunction, ContractConstructor } from "./pkg/ethabi.js";
 
 import * as HEX from "https://deno.land/std@0.95.0/encoding/hex.ts";
@@ -15,7 +19,7 @@ await init(wasm);
  * @returns hex-encoded 0x-prefixed string
  */
 export function deploy(constr: ContractConstructor, code: Uint8Array, ...values: any[]) {
-  const tokens = tokenize(constr.inputs(), values)
+  const tokens = tokenizeAll(constr.inputs(), values)
   return "0x" + HEX.encodeToString(constr.encode(code, tokens))
 }
 
@@ -26,7 +30,7 @@ export function deploy(constr: ContractConstructor, code: Uint8Array, ...values:
  * @returns hex-encoded 0x-prefixed string
  */
 export function call(func: ContractFunction, ...values: any[]) {
-  const tokens = tokenize(func.inputs(), values)
+  const tokens = tokenizeAll(func.inputs(), values)
   return "0x" + HEX.encodeToString(func.encode(tokens))
 }
 
@@ -37,34 +41,41 @@ export function call(func: ContractFunction, ...values: any[]) {
  * @param values Arguments as JS values (string, bigint, number)
  * @returns string array
  */
-export function tokenize(inputs: string[], values: any[]) {
-  return values.map((value, i) => {
-    const input = inputs[i]
+export function tokenizeAll(inputs: string[], values: unknown[]) {
+  return values.map((value, i) => tokenize(inputs[i], value));
+}
 
-    if (input === "address") {
-      if (typeof value === "string")
-        return value.slice(2)
-    }
+/**
+ * Transform any JS value to a string, according to the input type
+ * WARNING: does not yet support tuple and structs
+ * @param inputs Input type of the constructor/function to deploy/call
+ * @param values Argument as JS value (string, bigint, number)
+ * @returns string
+ */
+export function tokenize(input: string, value: unknown) {
+  if (input === "address") {
+    if (typeof value === "string")
+      return value.slice(2)
+  }
 
-    if (/^uint[0-9]+$/.test(input)) {
-      if (typeof value === "bigint")
-        if (value >= 0) return String(value);
-      if (typeof value === "number" && Number.isSafeInteger(value))
-        if (value >= 0) return String(value);
-    }
+  if (/^uint[0-9]+$/.test(input)) {
+    if (typeof value === "bigint")
+      if (value >= 0) return String(value);
+    if (typeof value === "number" && Number.isSafeInteger(value))
+      if (value >= 0) return String(value);
+  }
 
-    if (/^int[0-9]+$/.test(input)) {
-      if (typeof value === "bigint")
-        return String(value);
-      if (typeof value === "number" && Number.isSafeInteger(value))
-        return String(value);
-    }
+  if (/^int[0-9]+$/.test(input)) {
+    if (typeof value === "bigint")
+      return String(value);
+    if (typeof value === "number" && Number.isSafeInteger(value))
+      return String(value);
+  }
 
-    if (input === "string") {
-      if (typeof value === "string")
-        return value
-    }
+  if (input === "string") {
+    if (typeof value === "string")
+      return value
+  }
 
-    throw new Error(`Unable to tokenize ${value} for ${input}`)
-  });
+  throw new Error(`Unable to tokenizeAll ${value} for ${input}`)
 }
