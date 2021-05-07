@@ -40,6 +40,17 @@ const encoded = deploy(constructr, code, 10000n);
     deno cache -r https://deno.land/x/ethabi/test/token.ts
     deno run --allow-net https://deno.land/x/ethabi/test/token.ts
 
+## Current features
+
+- Function input encoding/decoding
+- Function output decoding
+- Constructor encoding/decoding
+- Tokenization of simple types:
+  - JS string <-> Solidity string
+  - JS string <-> Solitidy address
+  - JS bigint <-> Solidity (u)int
+  - JS number <-> Solidity (u)int
+
 ## Building (using Deno)
 
 - Install wasm-pack
