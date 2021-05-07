@@ -37,8 +37,8 @@ const encoded = deploy(constructr, code, 10000n);
 
 ## Test
 
-    deno cache -r https://deno.land/x/ethabi/test/test.ts
-    deno run --allow-net https://deno.land/x/ethabi/test/test.ts
+    deno cache -r https://deno.land/x/ethabi/test/token.ts
+    deno run --allow-net https://deno.land/x/ethabi/test/token.ts
 
 ## Building (using Deno)
 
@@ -52,4 +52,8 @@ const encoded = deploy(constructr, code, 10000n);
 
 - Pack .wasm to .wasm.js
 
-      deno run -A ./build.ts
+      deno run -A build.ts
+
+- Test
+
+      deno run -A test/test.ts

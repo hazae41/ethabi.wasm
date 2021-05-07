@@ -1,4 +1,4 @@
-import { call, Contract } from "../mod.ts";
+import { call, uncall, Contract, ContractFunction } from "../mod.ts";
 
 const ERC20url = new URL("ERC20.json", import.meta.url)
 const ERC20 = JSON.parse(Deno.readTextFileSync(ERC20url));
@@ -9,10 +9,12 @@ try {
   if (!transfer) throw new Error("No transfer function")
 
   const address = "0x39dfd20386F5d17eBa42763606B8c704FcDd1c1D";
-  const encoded = call(transfer, address, 10000000000n)
+  const encoded = call(transfer, [address, 10000000000n])
   console.log(encoded)
+  const decoded = uncall(transfer, encoded);
+  console.log(decoded)
 } catch (e: unknown) {
-  console.error(e);
+  throw e
 }
 
 console.log("Gracefully ended");

@@ -2,6 +2,9 @@
 /* eslint-disable */
 /**
 */
+export function main(): void;
+/**
+*/
 export class Contract {
   free(): void;
 /**
@@ -36,7 +39,12 @@ export class ContractConstructor {
 * @param {any[]} values
 * @returns {Uint8Array}
 */
-  encode(code: Uint8Array, values: any[]): Uint8Array;
+  encode_input(code: Uint8Array, values: any[]): Uint8Array;
+/**
+* @param {Uint8Array} bytes
+* @returns {any[]}
+*/
+  decode_input(bytes: Uint8Array): any[];
 }
 /**
 */
@@ -52,16 +60,31 @@ export class ContractFunction {
 */
   inputs(): any[];
 /**
+* @returns {any[]}
+*/
+  outputs(): any[];
+/**
 * @param {any[]} values
 * @returns {Uint8Array}
 */
-  encode(values: any[]): Uint8Array;
+  encode_input(values: any[]): Uint8Array;
+/**
+* @param {Uint8Array} bytes
+* @returns {any[]}
+*/
+  decode_input(bytes: Uint8Array): any[];
+/**
+* @param {Uint8Array} bytes
+* @returns {any[]}
+*/
+  decode_output(bytes: Uint8Array): any[];
 }
 
 export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
 export interface InitOutput {
   readonly memory: WebAssembly.Memory;
+  readonly main: () => void;
   readonly __wbg_contract_free: (a: number) => void;
   readonly contract_new: (a: number) => number;
   readonly contract_function: (a: number, b: number, c: number) => number;
@@ -69,15 +92,20 @@ export interface InitOutput {
   readonly contract_event: (a: number, b: number, c: number) => number;
   readonly __wbg_contractconstructor_free: (a: number) => void;
   readonly contractconstructor_inputs: (a: number, b: number) => void;
-  readonly contractconstructor_encode: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
+  readonly contractconstructor_encode_input: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
+  readonly contractconstructor_decode_input: (a: number, b: number, c: number, d: number) => void;
   readonly __wbg_contractfunction_free: (a: number) => void;
   readonly contractfunction_inputs: (a: number, b: number) => void;
-  readonly contractfunction_encode: (a: number, b: number, c: number, d: number) => void;
+  readonly contractfunction_outputs: (a: number, b: number) => void;
+  readonly contractfunction_encode_input: (a: number, b: number, c: number, d: number) => void;
+  readonly contractfunction_decode_input: (a: number, b: number, c: number, d: number) => void;
+  readonly contractfunction_decode_output: (a: number, b: number, c: number, d: number) => void;
   readonly __wbg_contractevent_free: (a: number) => void;
   readonly __wbindgen_malloc: (a: number) => number;
   readonly __wbindgen_realloc: (a: number, b: number, c: number) => number;
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
   readonly __wbindgen_free: (a: number, b: number) => void;
+  readonly __wbindgen_start: () => void;
 }
 
 /**

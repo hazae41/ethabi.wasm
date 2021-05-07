@@ -1,3 +1,5 @@
+extern crate console_error_panic_hook;
+
 use wasm_bindgen::prelude::*;
 
 use std::fmt::Display;
@@ -7,6 +9,11 @@ use ethabi::Param;
 
 fn js_value<T: Display>(e: T) -> JsValue {
   return JsValue::from(&format!("{}", e));
+}
+
+#[wasm_bindgen(start)]
+pub fn main() {
+  console_error_panic_hook::set_once();
 }
 
 #[wasm_bindgen]
@@ -69,20 +76,32 @@ impl ContractConstructor {
   }
 
   #[wasm_bindgen]
-  pub fn encode(&self, code: Vec<u8>, values: Vec<JsValue>) -> Result<Vec<u8>, JsValue> {
-    let mut tokens = vec![];
-
-    for i in 0..values.len() {
-      let kind = &self.inner.inputs[i].kind;
-      let value = &values[i].as_string().ok_or(js_value("Invalid value"))?;
-      let token = LenientTokenizer::tokenize(kind, value).map_err(js_value)?;
-      tokens.push(token);
-    }
-
+  pub fn encode_input(&self, code: Vec<u8>, values: Vec<JsValue>) -> Result<Vec<u8>, JsValue> {
+    let tokens = values
+      .iter()
+      .enumerate()
+      .map(|(i, value)| tokenize(&self.inner.inputs[i].kind, value))
+      .collect::<Result<Vec<_>, _>>()?;
     let bytes = self.inner.encode_input(code, &tokens).map_err(js_value)?;
 
     Ok(bytes)
   }
+
+  #[wasm_bindgen]
+  pub fn decode_input(&self, bytes: Vec<u8>) -> Result<Vec<JsValue>, JsValue> {
+    let types: Vec<ethabi::ParamType> = self.inner.inputs.iter().map(|p| p.kind.clone()).collect();
+    let tokens = ethabi::decode(&types, &bytes).map_err(js_value)?;
+    let values = tokens.iter().map(js_value).collect();
+
+    Ok(values)
+  }
+}
+
+pub fn tokenize(kind: &ethabi::ParamType, value: &JsValue) -> Result<ethabi::Token, JsValue> {
+  let string = value.as_string().ok_or(js_value("Invalid value"))?;
+  let token = LenientTokenizer::tokenize(kind, &string).map_err(js_value)?;
+
+  Ok(token)
 }
 
 #[wasm_bindgen]
@@ -100,19 +119,38 @@ impl ContractFunction {
   }
 
   #[wasm_bindgen]
-  pub fn encode(&self, values: Vec<JsValue>) -> Result<Vec<u8>, JsValue> {
-    let mut tokens = vec![];
+  pub fn outputs(&self) -> Vec<JsValue> {
+    let outputs = &self.inner.outputs;
+    let f = |it: &Param| js_value(&it.kind);
+    outputs.iter().map(f).collect()
+  }
 
-    for i in 0..values.len() {
-      let kind = &self.inner.inputs[i].kind;
-      let value = &values[i].as_string().ok_or(js_value("Invalid value"))?;
-      let token = LenientTokenizer::tokenize(kind, value).map_err(js_value)?;
-      tokens.push(token);
-    }
-
+  #[wasm_bindgen]
+  pub fn encode_input(&self, values: Vec<JsValue>) -> Result<Vec<u8>, JsValue> {
+    let tokens = values
+      .iter()
+      .enumerate()
+      .map(|(i, value)| tokenize(&self.inner.inputs[i].kind, value))
+      .collect::<Result<Vec<_>, _>>()?;
     let bytes = self.inner.encode_input(&tokens).map_err(js_value)?;
 
     Ok(bytes)
+  }
+
+  #[wasm_bindgen]
+  pub fn decode_input(&self, bytes: Vec<u8>) -> Result<Vec<JsValue>, JsValue> {
+    let tokens = self.inner.decode_input(&bytes).map_err(js_value)?;
+    let values = tokens.iter().map(js_value).collect();
+
+    Ok(values)
+  }
+
+  #[wasm_bindgen]
+  pub fn decode_output(&self, bytes: Vec<u8>) -> Result<Vec<JsValue>, JsValue> {
+    let tokens = self.inner.decode_output(&bytes).map_err(js_value)?;
+    let values = tokens.iter().map(js_value).collect();
+
+    Ok(values)
   }
 }
 
