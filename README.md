@@ -1,6 +1,6 @@
 # (WIP) ethabi.wasm
 
-WebAssembly powered Ethereum ABI encoder/decoder for Deno and Node, written in Rust.
+WebAssembly powered Ethereum ABI encoder/decoder for Deno, written in Rust.
 
 Uses https://github.com/rust-ethereum/ethabi under the hood.
 
