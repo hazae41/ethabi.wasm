@@ -53,7 +53,3 @@ const encoded = deploy(constructr, code, 10000n);
 - Pack .wasm to .wasm.js
 
       deno run -A build.ts
-
-- Test
-
-      deno run -A test/test.ts
