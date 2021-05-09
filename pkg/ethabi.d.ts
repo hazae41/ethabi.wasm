@@ -8,9 +8,9 @@ export function main(): void;
 export class Contract {
   free(): void;
 /**
-* @param {string} json
+* @param {any} json
 */
-  constructor(json: string);
+  constructor(json: any);
 /**
 * @param {string} name
 * @returns {ContractFunction | undefined}
@@ -86,7 +86,7 @@ export interface InitOutput {
   readonly memory: WebAssembly.Memory;
   readonly main: () => void;
   readonly __wbg_contract_free: (a: number) => void;
-  readonly contract_new: (a: number, b: number) => number;
+  readonly contract_new: (a: number) => number;
   readonly contract_function: (a: number, b: number, c: number) => number;
   readonly contract_constructr: (a: number) => number;
   readonly contract_event: (a: number, b: number, c: number) => number;

@@ -1,7 +1,6 @@
 import * as ethabi from "../../mod.ts";
 import { JSONRPC } from "./jsonrpc.ts";
-
-const ERC20 = await ethabi.load("abi/ERC20.json", import.meta.url);
+import ERC20 from "./abi/ERC20.ts";
 
 export class Token {
   constructor(

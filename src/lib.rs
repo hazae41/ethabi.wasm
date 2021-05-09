@@ -22,8 +22,8 @@ pub struct Contract {
 #[wasm_bindgen]
 impl Contract {
   #[wasm_bindgen(constructor)]
-  pub fn new(json: &str) -> Result<Contract, JsValue> {
-    let rcontract = serde_json::from_str::<ethabi::Contract>(json);
+  pub fn new(json: &JsValue) -> Result<Contract, JsValue> {
+    let rcontract = json.into_serde::<ethabi::Contract>();
     let contract = rcontract.map_err(js_value)?;
 
     Ok(Self {

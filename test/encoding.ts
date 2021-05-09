@@ -1,8 +1,8 @@
 import * as ethabi from "../mod.ts";
 
-try {
-  const ERC20 = await ethabi.load("ERC20.json", import.meta.url);
+import ERC20 from "./ERC20.ts";
 
+try {
   const transfer = ERC20.function("transfer");
   if (!transfer) throw new Error("No transfer function");
 

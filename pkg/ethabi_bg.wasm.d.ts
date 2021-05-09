@@ -3,7 +3,7 @@
 export const memory: WebAssembly.Memory;
 export function main(): void;
 export function __wbg_contract_free(a: number): void;
-export function contract_new(a: number, b: number): number;
+export function contract_new(a: number): number;
 export function contract_function(a: number, b: number, c: number): number;
 export function contract_constructr(a: number): number;
 export function contract_event(a: number, b: number, c: number): number;

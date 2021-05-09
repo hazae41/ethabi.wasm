@@ -16,8 +16,7 @@ Uses https://github.com/rust-ethereum/ethabi under the hood.
 
 ```typescript
 import * as ethabi from "https://deno.land/x/ethabi/mod.ts";
-
-const ERC20 = await ethabi.load("ERC20.json", import.meta.url);
+import ERC20 from "./ERC20.ts";
 
 // Call function "transfer" with address and uint256
 const transfer = ERC20.function("transfer")!;
