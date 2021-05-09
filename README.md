@@ -37,6 +37,9 @@ const encoded = ethabi.deploy(constructr, code, 10000n);
     deno cache -r https://deno.land/x/ethabi/test/encoding.ts
     deno run --allow-net https://deno.land/x/ethabi/test/encoding.ts
 
+    deno cache -r https://deno.land/x/ethabi/examples/tokens/mod.ts
+    deno run --allow-net https://deno.land/x/ethabi/examples/tokens/mod.ts
+
 ## Current features
 
 - Function input encoding/decoding
