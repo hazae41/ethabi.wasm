@@ -2,7 +2,7 @@ export { Contract, ContractFunction, ContractConstructor } from "./pkg/ethabi.js
 
 import * as HEX from "https://deno.land/std@0.95.0/encoding/hex.ts";
 
-import init, { ContractConstructor, ContractFunction } from "./pkg/ethabi.js";
+import init, { Contract, ContractConstructor, ContractFunction } from "./pkg/ethabi.js";
 import { wasm } from "./pkg/ethabi_bg.wasm.js";
 
 await init(wasm);
@@ -11,6 +11,25 @@ await init(wasm);
  * 0x-prefixed hex-encoded string
  */
 export type Encoded = string
+
+/**
+ * Load a contract from its ABI
+ * @param path URL path, local or remote
+ * @param base URL base, usually import.meta.url
+ * @returns Contract
+ */
+export async function load(path: string, base?: string | URL) {
+  const url = new URL(path, base)
+
+  if (url.protocol === "file:") {
+    const json = await Deno.readTextFile(url);
+    return new Contract(json);
+  }
+
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(res.statusText)
+  return new Contract(await res.text());
+}
 
 /**
  * Deploy a contract using the provided code and values

@@ -101,6 +101,10 @@ function passStringToWasm0(arg, malloc, realloc) {
     return ptr;
 }
 
+function isLikeNone(x) {
+    return x === undefined || x === null;
+}
+
 let cachegetInt32Memory0 = null;
 function getInt32Memory0() {
     if (cachegetInt32Memory0 === null || cachegetInt32Memory0.buffer !== wasm.memory.buffer) {
@@ -108,22 +112,10 @@ function getInt32Memory0() {
     }
     return cachegetInt32Memory0;
 }
-
-function isLikeNone(x) {
-    return x === undefined || x === null;
-}
 /**
 */
 export function main() {
     wasm.main();
-}
-
-let stack_pointer = 32;
-
-function addBorrowedObject(obj) {
-    if (stack_pointer == 1) throw new Error('out of js stack');
-    heap[--stack_pointer] = obj;
-    return stack_pointer;
 }
 
 let cachegetUint32Memory0 = null;
@@ -187,15 +179,13 @@ export class Contract {
         wasm.__wbg_contract_free(ptr);
     }
     /**
-    * @param {any} json
+    * @param {string} json
     */
     constructor(json) {
-        try {
-            var ret = wasm.contract_new(addBorrowedObject(json));
-            return Contract.__wrap(ret);
-        } finally {
-            heap[stack_pointer++] = undefined;
-        }
+        var ptr0 = passStringToWasm0(json, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
+        var len0 = WASM_VECTOR_LEN;
+        var ret = wasm.contract_new(ptr0, len0);
+        return Contract.__wrap(ret);
     }
     /**
     * @param {string} name
@@ -484,14 +474,6 @@ async function init(input) {
     imports.wbg.__wbindgen_string_new = function(arg0, arg1) {
         var ret = getStringFromWasm0(arg0, arg1);
         return addHeapObject(ret);
-    };
-    imports.wbg.__wbindgen_json_serialize = function(arg0, arg1) {
-        const obj = getObject(arg1);
-        var ret = JSON.stringify(obj === undefined ? null : obj);
-        var ptr0 = passStringToWasm0(ret, wasm.__wbindgen_malloc, wasm.__wbindgen_realloc);
-        var len0 = WASM_VECTOR_LEN;
-        getInt32Memory0()[arg0 / 4 + 1] = len0;
-        getInt32Memory0()[arg0 / 4 + 0] = ptr0;
     };
     imports.wbg.__wbg_new_59cb74e423758ede = function() {
         var ret = new Error();
