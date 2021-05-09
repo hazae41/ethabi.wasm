@@ -22,13 +22,13 @@ const ERC20 = await ethabi.load("ERC20.json", import.meta.url);
 // Call function "transfer" with address and uint256
 const transfer = ERC20.function("transfer")!;
 const myaddress = "0x39dfd20386F5d17eBa42763606B8c704FcDd1c1D";
-const encoded = ethabi.call(transfer, myaddress, 10000000000n);
+const called = ethabi.call(transfer, [myaddress, 10000000000n]);
 // -> hex-encoded 0x-prefixed string
 
 // Deploy contract with bytecode and uint256
-const code = new UInt8Array(/* your bytecode */);
+const code = new Uint8Array(/* your bytecode */);
 const constructr = ERC20.constructr()!;
-const encoded = ethabi.deploy(constructr, code, 10000n);
+const deployed = ethabi.deploy(constructr, code, [10000n]);
 // -> hex-encoded 0x-prefixed string
 ```
 
